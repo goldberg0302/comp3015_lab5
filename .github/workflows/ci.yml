@@ -20,12 +20,19 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
       - uses: actions/checkout@v2
       - name: Configure Application
         run: |
           mysql -h 127.0.0.1 --port 3306 -uroot < ./database/test_schema.sql
           cp .env.ci .env
           composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Print PHP Info
+        run: php -v
 
       - name: Run Unit Tests
         run: vendor/bin/phpunit
